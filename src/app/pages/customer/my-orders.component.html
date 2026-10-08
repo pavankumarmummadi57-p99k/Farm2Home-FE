@@ -1,0 +1,88 @@
+<!-- <section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>My orders</h1>
+        <p>Your customer order history from <code>GET /api/orders/my-orders</code>.</p>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><div><div class="spinner"></div>Loading orders…</div></div>
+    } @else if (!orders().length) {
+      <div class="empty-state">
+        <h3>No orders yet</h3>
+        <p>Your placed orders will appear here.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Order</th><th>Product</th><th>Quantity</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            @for (order of orders(); track id(order) || $index) {
+              <tr>
+                <td>#{{ id(order) }}</td>
+                <td><strong>{{ product(order) }}</strong></td>
+                <td>{{ quantity(order) }}</td>
+                <td>{{ amount(order) ? ('₹' + (amount(order) | number:'1.0-2')) : '—' }}</td>
+                <td><span class="status" [ngClass]="statusClass(status(order))">{{ status(order) }}</span></td>
+                <td>{{ date(order) || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section> -->
+
+
+
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>My orders</h1>
+        <p>Track whether your farmer has accepted or rejected each order.</p>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><div><div class="spinner"></div>Loading orders…</div></div>
+    } @else if (!orders().length) {
+      <div class="empty-state">
+        <h3>No orders yet</h3>
+        <p>Your placed orders will appear here.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Order</th><th>Product</th><th>Quantity</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            @for (order of orders(); track id(order) || $index) {
+              <tr>
+                <td>#{{ id(order) }}</td>
+                <td><strong>{{ product(order) }}</strong></td>
+                <td>{{ quantity(order) }}</td>
+                <td>{{ amount(order) ? ('₹' + (amount(order) | number:'1.0-2')) : '—' }}</td>
+                <td>
+                  <span class="status" [ngClass]="statusClass(status(order))">{{ status(order) }}</span>
+                  @if (status(order) === 'REJECTED' && rejectionReason(order)) {
+                    <div class="rejection-note">{{ rejectionReason(order) }}</div>
+                  }
+                </td>
+                <!-- <td>{{ date(order) || '—' }}</td> -->
+                 <td>
+                    {{ date(order)
+                        ? (date(order) | date:'yyyy-MM-dd,hh:mm a')
+                        : '—'
+                    }}
+                  </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>

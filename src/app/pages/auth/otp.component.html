@@ -1,0 +1,44 @@
+<section class="page-narrow">
+  <div class="card form-card" style="margin-top:2rem">
+    <div class="page-heading">
+      <div>
+        <h1>Verify mobile</h1>
+        <p>Enter the six-digit OTP associated with your Farm2Home account.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="verify()">
+      <div class="field">
+        <label for="phone">Phone number</label>
+        <input id="phone" inputmode="numeric" maxlength="10" formControlName="phoneNumber">
+        <div class="field-error">
+          @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) {
+            Enter a valid 10-digit mobile number.
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="otp">OTP</label>
+        <input id="otp" inputmode="numeric" maxlength="6" formControlName="otp" placeholder="6-digit OTP">
+        <div class="field-error">
+          @if (form.controls.otp.touched && form.controls.otp.invalid) {
+            OTP must contain exactly 6 characters.
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit" [disabled]="loading()">
+          {{ loading() ? 'Verifying…' : 'Verify OTP' }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="send(false)" [disabled]="sending()">Send OTP</button>
+        <button class="btn btn-ghost" type="button" (click)="send(true)" [disabled]="sending()">Resend OTP</button>
+      </div>
+    </form>
+
+    <p class="small muted" style="margin-top:1rem">
+      Already verified? <a routerLink="/login" class="text-success"><strong>Go to login</strong></a>
+    </p>
+  </div>
+</section>

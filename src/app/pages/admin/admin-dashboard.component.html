@@ -1,0 +1,28 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>Admin dashboard</h1>
+        <p>Review pending farmer applications and manage product categories.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      <a class="card stat-card" routerLink="/admin/farmers">
+        <div class="stat-label">Pending farmer reviews</div>
+        <div class="stat-value">{{ loading() ? '…' : pendingCount() }}</div>
+        <div class="stat-hint">Open the verification queue</div>
+      </a>
+      <a class="card stat-card" routerLink="/admin/categories">
+        <div class="stat-label">Categories</div>
+        <div class="stat-value" style="font-size:1.1rem">Manage</div>
+        <div class="stat-hint">View and create marketplace categories</div>
+      </a>
+      <div class="card stat-card">
+        <div class="stat-label">Admin role</div>
+        <div class="stat-value" style="font-size:1.1rem">ADMIN</div>
+        <div class="stat-hint">Protected by role guard</div>
+      </div>
+    </div>
+  </div>
+</section>

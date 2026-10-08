@@ -1,0 +1,51 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>Your cart</h1>
+        <p>Cart items are stored locally; checkout sends each item to <code>POST /api/orders</code>.</p>
+      </div>
+      <a class="btn btn-secondary" routerLink="/">Continue shopping</a>
+    </div>
+
+    @if (!cart.items().length) {
+      <div class="empty-state">
+        <h3>Your cart is empty</h3>
+        <p>Add fresh products from the Farm2Home marketplace.</p>
+        <a class="btn btn-primary" routerLink="/">Browse products</a>
+      </div>
+    } @else {
+      <div class="grid" style="grid-template-columns:minmax(0,1fr) 320px;align-items:start">
+        <div class="grid">
+          @for (item of cart.items(); track item.productId) {
+            <article class="card card-pad" style="display:grid;grid-template-columns:110px 1fr auto;gap:1rem;align-items:center">
+              <img [src]="item.image || '/placeholder-product.svg'" [alt]="item.productName"
+                style="width:110px;height:90px;object-fit:cover;border-radius:12px;background:var(--surface-2)">
+              <div>
+                <h3 style="margin-bottom:.3rem">{{ item.productName }}</h3>
+                <div class="price">₹{{ item.price | number:'1.0-2' }}/{{ item.unit }}</div>
+                <div class="field" style="max-width:170px;margin-top:.65rem">
+                  <label>Quantity</label>
+                  <input type="number" [value]="item.quantity" [min]="item.minimumOrderQuantity"
+                    [step]="item.minimumOrderQuantity" (change)="quantityChanged(item.productId, $event)">
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" type="button" (click)="cart.remove(item.productId)">Remove</button>
+            </article>
+          }
+        </div>
+
+        <aside class="card card-pad">
+          <h3>Order summary</h3>
+          <div style="display:flex;justify-content:space-between;margin:1rem 0">
+            <span class="muted">{{ cart.count() }} item(s)</span>
+            <strong>₹{{ cart.total() | number:'1.0-2' }}</strong>
+          </div>
+          <button class="btn btn-primary btn-block" type="button" (click)="checkout()" [disabled]="checkingOut()">
+            {{ checkingOut() ? 'Placing orders…' : 'Checkout' }}
+          </button>
+        </aside>
+      </div>
+    }
+  </div>
+</section>

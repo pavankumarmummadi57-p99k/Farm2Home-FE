@@ -1,0 +1,51 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>Farmer verification</h1>
+        <p>Upload government ID images and a farm photo. Files are sent as multipart form data to your existing upload APIs.</p>
+      </div>
+      <button class="btn btn-secondary" type="button" (click)="refresh()">Refresh status</button>
+    </div>
+
+    <div class="card card-pad" style="margin-bottom:1rem">
+      <div class="small muted">Current verification status</div>
+      @if (loading()) {
+        <strong>Checking…</strong>
+      } @else {
+        <span class="status" [ngClass]="statusClass(statusText())">{{ statusText() }}</span>
+        @if (remarks()) { <p class="muted" style="margin:.75rem 0 0">{{ remarks() }}</p> }
+      }
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card form-card">
+        <h2>Government ID</h2>
+        <p class="muted">Select clear front and back images.</p>
+        <div class="field">
+          <label>Front image</label>
+          <input class="file-input" type="file" accept="image/*" (change)="fileChanged('front', $event)">
+        </div>
+        <div class="field" style="margin-top:.8rem">
+          <label>Back image</label>
+          <input class="file-input" type="file" accept="image/*" (change)="fileChanged('back', $event)">
+        </div>
+        <button class="btn btn-primary" type="button" style="margin-top:1rem" (click)="uploadId()" [disabled]="idUploading()">
+          {{ idUploading() ? 'Uploading…' : 'Upload government ID' }}
+        </button>
+      </div>
+
+      <div class="card form-card">
+        <h2>Farm photo</h2>
+        <p class="muted">Upload a recent photo of your farm for verification.</p>
+        <div class="field">
+          <label>Farm image</label>
+          <input class="file-input" type="file" accept="image/*" (change)="fileChanged('farm', $event)">
+        </div>
+        <button class="btn btn-primary" type="button" style="margin-top:1rem" (click)="uploadFarm()" [disabled]="farmUploading()">
+          {{ farmUploading() ? 'Uploading…' : 'Upload farm photo' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

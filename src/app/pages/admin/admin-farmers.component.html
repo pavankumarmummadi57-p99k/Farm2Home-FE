@@ -1,0 +1,31 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div><h1>Pending farmers</h1><p>Verification queue from <code>GET /api/admin/farmers/pending</code>.</p></div>
+      <button class="btn btn-secondary" type="button" (click)="load()">Refresh</button>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><div><div class="spinner"></div>Loading farmers…</div></div>
+    } @else if (!farmers().length) {
+      <div class="empty-state"><h3>No pending farmers</h3><p>The verification queue is currently empty.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Farmer</th><th>Farm</th><th>Location</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            @for (farmer of farmers(); track farmerId(farmer) || $index) {
+              <tr>
+                <td><strong>{{ farmerName(farmer) }}</strong></td>
+                <td>{{ farmName(farmer) }}</td>
+                <td>{{ location(farmer) }}</td>
+                <td><span class="status" [ngClass]="statusClass(status(farmer))">{{ status(farmer) }}</span></td>
+                <td><a class="btn btn-secondary btn-sm" [routerLink]="['/admin/farmers', farmerId(farmer)]">Review</a></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>

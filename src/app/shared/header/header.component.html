@@ -1,0 +1,308 @@
+<!-- <header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
+      <img src="/logo.svg" alt="Farm2Home logo">
+      <span>Farm2Home</span>
+    </a>
+
+    <button class="menu-toggle icon-btn" type="button" aria-label="Toggle navigation"
+      (click)="menuOpen.set(!menuOpen())">
+      ☰
+    </button>
+
+    <nav class="nav-links" [class.open]="menuOpen()">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Home</a>
+
+      @if (auth.role() === 'CUSTOMER') {
+        <a routerLink="/my-orders" routerLinkActive="active" (click)="closeMenu()">My Orders</a>
+        <a routerLink="/farmer/register" routerLinkActive="active" (click)="closeMenu()">Become a Farmer</a>
+        <a class="cart-link" routerLink="/cart" routerLinkActive="active" (click)="closeMenu()">
+          Cart <span class="badge">{{ cart.count() }}</span>
+        </a>
+      }
+
+      @if (auth.role() === 'FARMER') {
+        <a routerLink="/farmer/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
+        <a routerLink="/farmer/products" routerLinkActive="active" (click)="closeMenu()">My Products</a>
+        <a routerLink="/farmer/orders" routerLinkActive="active" (click)="closeMenu()">Orders</a>
+        <a routerLink="/farmer/verification" routerLinkActive="active" (click)="closeMenu()">Verification</a>
+        <a routerLink="/farmer/profile" routerLinkActive="active" (click)="closeMenu()">Profile</a>
+      }
+
+      @if (auth.role() === 'ADMIN') {
+        <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+        <a routerLink="/admin/farmers" routerLinkActive="active" (click)="closeMenu()">Farmer Reviews</a>
+        <a routerLink="/admin/categories" routerLinkActive="active" (click)="closeMenu()">Categories</a>
+      }
+
+      <div class="nav-actions">
+        <button class="icon-btn theme-btn" type="button" (click)="theme.toggle()" [attr.aria-label]="'Switch theme'">
+          {{ theme.theme() === 'light' ? '☾' : '☀' }}
+        </button>
+
+        @if (auth.isAuthenticated()) {
+          <button class="btn btn-ghost btn-sm" type="button" (click)="logout()">Logout</button>
+        } @else {
+          <a class="btn btn-ghost btn-sm" routerLink="/login" (click)="closeMenu()">Login</a>
+          <a class="btn btn-primary btn-sm" routerLink="/register" (click)="closeMenu()">Sign up</a>
+        }
+      </div>
+    </nav>
+  </div>
+</header> -->
+
+
+<header class="site-header">
+
+  <div class="container nav-wrap">
+
+    <a
+      class="brand"
+      routerLink="/"
+      (click)="closeMenu()">
+
+      <img
+        src="/logo.svg"
+        alt="Farm2Home logo">
+
+      <span>
+        Farm2Home
+      </span>
+
+    </a>
+
+
+    <button
+      class="menu-toggle icon-btn"
+      type="button"
+      aria-label="Toggle navigation"
+      (click)="menuOpen.set(!menuOpen())">
+
+      ☰
+
+    </button>
+
+
+    <nav
+      class="nav-links"
+      [class.open]="menuOpen()">
+
+
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        (click)="closeMenu()">
+
+        Home
+
+      </a>
+
+
+      @if (auth.role() === 'CUSTOMER') {
+
+        <a
+          routerLink="/my-orders"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          My Orders
+
+        </a>
+
+
+        <a
+          routerLink="/farmer/register"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Become a Farmer
+
+        </a>
+
+
+        <a
+          class="cart-link"
+          routerLink="/cart"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Cart
+
+          <span class="badge">
+            {{ cart.count() }}
+          </span>
+
+        </a>
+
+
+        <!-- CUSTOMER PROFILE -->
+
+        <a
+          class="profile-link"
+          routerLink="/profile"
+          routerLinkActive="active"
+          (click)="closeMenu()"
+          aria-label="Customer profile"
+          title="My Profile">
+
+          <span class="profile-icon">
+            👤
+          </span>
+
+          <span class="profile-text">
+            Profile
+          </span>
+
+        </a>
+
+      }
+
+
+      @if (auth.role() === 'FARMER') {
+
+        <a
+          routerLink="/farmer/dashboard"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Dashboard
+
+        </a>
+
+
+        <a
+          routerLink="/farmer/products"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          My Products
+
+        </a>
+
+
+        <a
+          routerLink="/farmer/orders"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Orders
+
+        </a>
+
+
+        <a
+          routerLink="/farmer/verification"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Verification
+
+        </a>
+
+
+        <a
+          routerLink="/farmer/profile"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Profile
+
+        </a>
+
+      }
+
+
+      @if (auth.role() === 'ADMIN') {
+
+        <a
+          routerLink="/admin/dashboard"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Admin
+
+        </a>
+
+
+        <a
+          routerLink="/admin/farmers"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Farmer Reviews
+
+        </a>
+
+
+        <a
+          routerLink="/admin/categories"
+          routerLinkActive="active"
+          (click)="closeMenu()">
+
+          Categories
+
+        </a>
+
+      }
+
+
+      <div class="nav-actions">
+
+
+        <button
+          class="icon-btn theme-btn"
+          type="button"
+          (click)="theme.toggle()"
+          [attr.aria-label]="'Switch theme'">
+
+          {{
+            theme.theme() === 'light'
+              ? '☾'
+              : '☀'
+          }}
+
+        </button>
+
+
+        @if (auth.isAuthenticated()) {
+
+          <button
+            class="btn btn-ghost btn-sm"
+            type="button"
+            (click)="logout()">
+
+            Logout
+
+          </button>
+
+        } @else {
+
+          <a
+            class="btn btn-ghost btn-sm"
+            routerLink="/login"
+            (click)="closeMenu()">
+
+            Login
+
+          </a>
+
+
+          <a
+            class="btn btn-primary btn-sm"
+            routerLink="/register"
+            (click)="closeMenu()">
+
+            Sign up
+
+          </a>
+
+        }
+
+      </div>
+
+    </nav>
+
+  </div>
+
+</header>

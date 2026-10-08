@@ -1,0 +1,428 @@
+<section class="page">
+
+  <div class="container">
+
+    @if (loading()) {
+
+      <div class="loading">
+        <div>
+          <div class="spinner"></div>
+          Loading product…
+        </div>
+      </div>
+
+    } @else if (!productId(product())) {
+
+      <div class="empty-state">
+        <h2>
+          Product not available
+        </h2>
+
+        <a
+          class="btn btn-primary"
+          routerLink="/">
+          Back to products
+        </a>
+      </div>
+
+    } @else {
+
+      <div
+        class="grid grid-2"
+        style="align-items:start">
+
+        <div
+          class="card"
+          style="overflow:hidden">
+
+          <img
+            [src]="productImage(product())"
+            [alt]="productName(product())"
+            style="
+              width:100%;
+              aspect-ratio:4/3;
+              object-fit:cover;
+              background:var(--surface-2);
+            ">
+        </div>
+
+        <div>
+
+          <div class="product-meta">
+
+            <span>
+              {{
+                productCategoryName(product())
+                || 'Farm produce'
+              }}
+            </span>
+
+            <span
+              class="status"
+              [class.status-success]="
+                productAvailable(product())
+              "
+              [class.status-danger]="
+                !productAvailable(product())
+              ">
+
+              {{
+                productAvailable(product())
+                  ? 'Available'
+                  : 'Unavailable'
+              }}
+            </span>
+          </div>
+
+          <h1
+            style="
+              font-size:clamp(2rem,5vw,3.5rem);
+              margin:.55rem 0;
+            ">
+
+            {{ productName(product()) }}
+          </h1>
+
+          @if (
+            productFarmerName(product())
+          ) {
+            <div
+              style="
+                display:flex;
+                align-items:center;
+                gap:.75rem;
+                flex-wrap:wrap;
+              ">
+
+              <p
+                class="muted"
+                style="margin:0">
+
+                Sold by
+                {{ productFarmerName(product()) }}
+              </p>
+
+              @if (
+                auth.role() === 'CUSTOMER'
+                || auth.role() === 'FARMER'
+              ) {
+                <button
+                  class="btn btn-secondary btn-sm"
+                  type="button"
+                  (click)="callFarmer()"
+                  [disabled]="callingFarmer()"
+                  title="Call farmer"
+                  aria-label="Call farmer">
+
+                  {{
+                    callingFarmer()
+                      ? 'Opening dialer…'
+                      : '☎ Call farmer'
+                  }}
+                </button>
+              }
+            </div>
+          }
+
+          <div
+            class="price"
+            style="
+              font-size:1.7rem;
+              margin:1rem 0;
+            ">
+
+            ₹{{
+              productPrice(product())
+              | number:'1.0-2'
+            }}
+            /
+            {{ productUnit(product()) }}
+          </div>
+
+          <p style="line-height:1.75">
+
+            {{
+              productDescription(product())
+              ||
+              'Fresh farm product available through Farm2Home.'
+            }}
+          </p>
+
+          @if (
+            !productAvailable(product())
+          ) {
+            <div
+              class="card card-pad"
+              style="margin-top:1rem">
+
+              <strong>
+                This product is currently unavailable.
+              </strong>
+
+              <div class="small muted">
+                You can still contact the farmer using
+                the Call farmer button.
+              </div>
+            </div>
+          }
+
+          <div
+            class="card card-pad"
+            style="margin-top:1.25rem">
+
+            <div class="grid grid-2">
+
+              <div>
+                <div class="small muted">
+                  Available quantity
+                </div>
+
+                <strong>
+                  {{
+                    productAvailableQuantity(product())
+                    || '—'
+                  }}
+                  {{ productUnit(product()) }}
+                </strong>
+              </div>
+
+              <div>
+                <div class="small muted">
+                  Minimum order
+                </div>
+
+                <strong>
+                  {{
+                    productMinimumOrder(product())
+                  }}
+                  {{ productUnit(product()) }}
+                </strong>
+              </div>
+            </div>
+
+            <div
+              class="field"
+              style="margin-top:1rem">
+
+              <label for="quantity">
+                Order quantity
+              </label>
+
+              <input
+                id="quantity"
+                type="number"
+                [(ngModel)]="quantity"
+                [min]="
+                  productMinimumOrder(product())
+                "
+                [step]="
+                  productMinimumOrder(product())
+                "
+                [disabled]="
+                  !productAvailable(product())
+                ">
+            </div>
+
+            <div class="form-actions">
+
+              <button
+                class="btn btn-secondary"
+                type="button"
+                (click)="addToCart()"
+                [disabled]="
+                  !productAvailable(product())
+                ">
+
+                {{
+                  productAvailable(product())
+                    ? 'Add to cart'
+                    : 'Unavailable'
+                }}
+              </button>
+
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="buyNow()"
+                [disabled]="
+                  !productAvailable(product())
+                  || ordering()
+                ">
+
+                {{
+                  !productAvailable(product())
+                    ? 'Unavailable'
+                    : (
+                        ordering()
+                          ? 'Checking / placing…'
+                          : 'Buy now'
+                      )
+                }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+
+<!-- FIRST-TIME DELIVERY ADDRESS POPUP -->
+
+@if (addressModalOpen()) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeAddressModal()">
+
+    <div
+      class="modal-card"
+      (click)="$event.stopPropagation()">
+
+      <div class="modal-heading">
+        <div>
+          <h2>
+            Delivery address
+          </h2>
+
+          <p>
+            Add your delivery address once.
+            Future orders will use this address automatically.
+          </p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="addressLine1">
+          House / Flat / Door No. *
+        </label>
+
+        <input
+          id="addressLine1"
+          type="text"
+          [(ngModel)]="addressForm.addressLine1"
+          placeholder="Example: H.No 2-45">
+      </div>
+
+      <div class="field">
+        <label for="addressLine2">
+          Street / Area
+        </label>
+
+        <input
+          id="addressLine2"
+          type="text"
+          [(ngModel)]="addressForm.addressLine2"
+          placeholder="Example: Main Road">
+      </div>
+
+      <div class="grid grid-2">
+
+        <div class="field">
+          <label for="village">
+            Village / Locality *
+          </label>
+
+          <input
+            id="village"
+            type="text"
+            [(ngModel)]="addressForm.village"
+            placeholder="Village / locality">
+        </div>
+
+        <div class="field">
+          <label for="mandal">
+            Mandal / City *
+          </label>
+
+          <input
+            id="mandal"
+            type="text"
+            [(ngModel)]="addressForm.mandal"
+            placeholder="Mandal / city">
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+
+        <div class="field">
+          <label for="district">
+            District *
+          </label>
+
+          <input
+            id="district"
+            type="text"
+            [(ngModel)]="addressForm.district"
+            placeholder="District">
+        </div>
+
+        <div class="field">
+          <label for="state">
+            State *
+          </label>
+
+          <input
+            id="state"
+            type="text"
+            [(ngModel)]="addressForm.state"
+            placeholder="State">
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+
+        <div class="field">
+          <label for="pincode">
+            Pincode *
+          </label>
+
+          <input
+            id="pincode"
+            type="text"
+            maxlength="6"
+            inputmode="numeric"
+            [(ngModel)]="addressForm.pincode"
+            placeholder="6 digit pincode">
+        </div>
+
+        <div class="field">
+          <label for="landmark">
+            Landmark
+          </label>
+
+          <input
+            id="landmark"
+            type="text"
+            [(ngModel)]="addressForm.landmark"
+            placeholder="Optional landmark">
+        </div>
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          class="btn btn-secondary"
+          type="button"
+          (click)="closeAddressModal()"
+          [disabled]="savingAddress()">
+          Cancel
+        </button>
+
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="saveAddressAndContinue()"
+          [disabled]="savingAddress()">
+
+          {{
+            savingAddress()
+              ? 'Saving…'
+              : 'Save & continue'
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

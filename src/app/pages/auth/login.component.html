@@ -1,0 +1,44 @@
+<section class="auth-shell">
+  <div class="auth-art">
+    <span class="hero-kicker" style="color:#bbf7d0">Farm2Home</span>
+    <h1>Fresh food. Fair value. Direct from farms.</h1>
+    <p>Sign in to buy fresh produce, manage your farm products, or review farmer verification requests.</p>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <h2>Welcome back</h2>
+      <p>Use the phone number and password registered with Farm2Home.</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="field">
+          <label for="phone">Phone number</label>
+          <input id="phone" inputmode="numeric" maxlength="10" formControlName="phoneNumber" placeholder="10-digit mobile number">
+          <div class="field-error">
+            @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) {
+              Enter a valid Indian mobile number.
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" formControlName="password" placeholder="Your password">
+          <div class="field-error">
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              Password is required.
+            }
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">
+          {{ loading() ? 'Signing in…' : 'Login' }}
+        </button>
+      </form>
+
+      <p class="small text-center" style="margin-top:1rem">
+        New to Farm2Home? <a routerLink="/register" class="text-success"><strong>Create an account</strong></a>
+      </p>
+    </div>
+  </div>
+</section>

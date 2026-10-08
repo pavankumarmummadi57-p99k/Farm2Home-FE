@@ -1,0 +1,18 @@
+<div class="toast-stack" aria-live="polite" aria-atomic="true">
+  @for (item of toast.messages(); track item.id) {
+    <button
+      class="toast"
+      [class.toast-success]="item.type === 'success'"
+      [class.toast-error]="item.type === 'error'"
+      [class.toast-info]="item.type === 'info'"
+      type="button"
+      (click)="toast.remove(item.id)">
+      <span class="toast-icon">
+        @if (item.type === 'success') { ✓ }
+        @else if (item.type === 'error') { ! }
+        @else { i }
+      </span>
+      <span>{{ item.message }}</span>
+    </button>
+  }
+</div>

@@ -1,0 +1,328 @@
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-kicker">
+        Direct from local farms
+      </div>
+
+      <h1>
+        Fresh harvests, closer to home.
+      </h1>
+
+      <p>
+        Farm2Home connects customers directly with farmers.
+        Discover fresh produce, order confidently, and help
+        local farms earn fair value.
+      </p>
+
+      <div class="hero-actions">
+        <a
+          class="btn btn-primary"
+          href="#products">
+          Shop fresh produce
+        </a>
+
+        @if (auth.role() === 'CUSTOMER') {
+          <a
+            class="btn btn-secondary"
+            routerLink="/farmer/register">
+            Become a farmer
+          </a>
+        } @else if (!auth.isAuthenticated()) {
+          <a
+            class="btn btn-secondary"
+            routerLink="/register">
+            Create account
+          </a>
+        }
+      </div>
+    </div>
+
+    <div
+      class="hero-visual"
+      aria-label="Farm2Home visual">
+
+      <span class="hero-chip one">
+        🌱 Farmer direct
+      </span>
+
+      <img
+        src="/logo.svg"
+        alt="">
+
+      <span class="hero-chip two">
+        🥬 Fresh every day
+      </span>
+    </div>
+  </div>
+</section>
+
+
+<section
+  class="section"
+  id="products">
+
+  <div class="container">
+
+    <h2 class="section-title">
+      Browse farm products
+    </h2>
+
+    <p class="section-subtitle">
+      Search or filter using the categories provided by your backend.
+    </p>
+
+    <form
+      class="search-bar"
+      (ngSubmit)="search()">
+
+      <input
+        [(ngModel)]="keyword"
+        name="keyword"
+        placeholder="Search tomatoes, vegetables, fruits…"
+        aria-label="Search products">
+
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="searchLoading()">
+
+        {{
+          searchLoading()
+            ? 'Searching…'
+            : 'Search'
+        }}
+      </button>
+    </form>
+
+    <div class="chips">
+
+      <button
+        class="chip"
+        [class.active]="activeCategory() === null"
+        type="button"
+        (click)="filterCategory(null)">
+        All
+      </button>
+
+      @for (
+        category of categories();
+        track categoryId(category)
+      ) {
+        <button
+          class="chip"
+          [class.active]="
+            activeCategory()
+            ===
+            categoryId(category)
+          "
+          type="button"
+          (click)="
+            filterCategory(
+              categoryId(category)
+            )
+          ">
+
+          {{ categoryName(category) }}
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="loading">
+        <div>
+          <div class="spinner"></div>
+          Loading products…
+        </div>
+      </div>
+    } @else if (!products().length) {
+      <div class="empty-state">
+        <h3>
+          No products found
+        </h3>
+
+        <p>
+          Try another keyword or category.
+          The list is loaded from
+          <code>GET /api/products</code>.
+        </p>
+      </div>
+    } @else {
+      <div class="product-grid">
+
+        @for (
+          product of products();
+          track productId(product) || $index
+        ) {
+          <article class="card product-card">
+
+            <a
+              [routerLink]="[
+                '/products',
+                productId(product)
+              ]">
+
+              <img
+                class="product-card-image"
+                [src]="productImage(product)"
+                [alt]="productName(product)">
+            </a>
+
+            <div class="product-card-body">
+
+              <div class="product-meta">
+
+                <span>
+                  {{
+                    productCategoryName(product)
+                    || 'Farm produce'
+                  }}
+                </span>
+
+                <span
+                  class="status"
+                  [class.status-success]="
+                    productAvailable(product)
+                  "
+                  [class.status-danger]="
+                    !productAvailable(product)
+                  ">
+
+                  {{
+                    productAvailable(product)
+                      ? 'Available'
+                      : 'Unavailable'
+                  }}
+                </span>
+              </div>
+
+              <h3>
+                <a
+                  [routerLink]="[
+                    '/products',
+                    productId(product)
+                  ]">
+
+                  {{ productName(product) }}
+                </a>
+              </h3>
+
+              <div class="product-meta">
+
+                <span class="price">
+                  ₹{{
+                    productPrice(product)
+                    | number:'1.0-2'
+                  }}/{{ productUnit(product) }}
+                </span>
+
+                @if (
+                  productAvailableQuantity(product)
+                ) {
+                  <span>
+                    {{
+                      productAvailableQuantity(product)
+                    }}
+                    {{ productUnit(product) }}
+                    left
+                  </span>
+                }
+              </div>
+
+              <div class="product-actions">
+
+                <a
+                  class="btn btn-secondary btn-sm"
+                  [routerLink]="[
+                    '/products',
+                    productId(product)
+                  ]">
+                  Details
+                </a>
+
+                <button
+                  class="btn btn-primary btn-sm"
+                  type="button"
+                  [disabled]="
+                    !productAvailable(product)
+                  "
+                  (click)="addToCart(product)">
+                  Add to cart
+                </button>
+
+                @if (
+                  auth.role() === 'CUSTOMER'
+                  || auth.role() === 'FARMER'
+                ) {
+                  <button
+                    class="btn btn-secondary btn-sm"
+                    type="button"
+                    (click)="callFarmer(product)"
+                    [disabled]="
+                      callingProductId()
+                      ===
+                      productId(product)
+                    "
+                    title="Call farmer"
+                    aria-label="Call farmer"
+                    style="
+                      min-width:2.7rem;
+                      font-size:1.1rem;
+                    ">
+
+                    {{
+                      callingProductId()
+                      ===
+                      productId(product)
+                        ? '…'
+                        : '☎'
+                    }}
+                  </button>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container grid grid-3">
+
+    <div class="card card-pad">
+      <h3>
+        For customers
+      </h3>
+
+      <p class="muted">
+        Browse products, search by keyword,
+        order produce and track your order history.
+      </p>
+    </div>
+
+    <div class="card card-pad">
+      <h3>
+        For farmers
+      </h3>
+
+      <p class="muted">
+        Register your farm, complete verification,
+        manage products, upload images and view incoming orders.
+      </p>
+    </div>
+
+    <div class="card card-pad">
+      <h3>
+        For admins
+      </h3>
+
+      <p class="muted">
+        Review pending farmers, inspect verification information
+        and approve or reject applications.
+      </p>
+    </div>
+  </div>
+</section>

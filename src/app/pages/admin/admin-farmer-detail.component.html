@@ -1,0 +1,62 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div><h1>Farmer review</h1><p>Farmer #{{ farmerId }}</p></div>
+      <a class="btn btn-secondary" routerLink="/admin/farmers">Back to queue</a>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><div><div class="spinner"></div>Loading farmer details…</div></div>
+    } @else {
+      <div class="grid grid-2" style="align-items:start">
+        <div class="card form-card">
+          <div style="display:flex;justify-content:space-between;gap:1rem;align-items:start">
+            <div><h2>{{ value('farmerName','name','fullName') }}</h2><p class="muted">{{ value('farmName') }}</p></div>
+            <span class="status" [ngClass]="statusClass(status())">{{ status() }}</span>
+          </div>
+
+          <div class="kv-grid">
+            <div class="kv"><span>Farm address</span><strong>{{ value('farmAddress') }}</strong></div>
+            <div class="kv"><span>Village</span><strong>{{ value('village') }}</strong></div>
+            <div class="kv"><span>Mandal</span><strong>{{ value('mandal') }}</strong></div>
+            <div class="kv"><span>District</span><strong>{{ value('district') }}</strong></div>
+            <div class="kv"><span>State</span><strong>{{ value('state') }}</strong></div>
+            <div class="kv"><span>Pincode</span><strong>{{ value('pincode') }}</strong></div>
+            <div class="kv"><span>Farm area</span><strong>{{ value('farmArea') }}</strong></div>
+            <div class="kv"><span>ID type</span><strong>{{ value('governmentIdType') }}</strong></div>
+            <div class="kv full"><span>ID number</span><strong>{{ value('governmentIdNumber') }}</strong></div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="card form-card">
+            <h2>Verification documents</h2>
+            <p class="muted">If your farmer-details response contains upload paths, they are previewed here. Otherwise the backend response does not expose them.</p>
+            <div class="grid grid-2">
+              @if (asset('governmentIdFrontPath','frontImagePath','governmentIdFront')) {
+                <div><div class="small muted">ID front</div><img [src]="asset('governmentIdFrontPath','frontImagePath','governmentIdFront')" alt="Government ID front" style="margin-top:.5rem;border-radius:12px"></div>
+              }
+              @if (asset('governmentIdBackPath','backImagePath','governmentIdBack')) {
+                <div><div class="small muted">ID back</div><img [src]="asset('governmentIdBackPath','backImagePath','governmentIdBack')" alt="Government ID back" style="margin-top:.5rem;border-radius:12px"></div>
+              }
+              @if (asset('farmPhotoPath','farmImagePath','farmPhoto')) {
+                <div class="full"><div class="small muted">Farm photo</div><img [src]="asset('farmPhotoPath','farmImagePath','farmPhoto')" alt="Farm" style="margin-top:.5rem;border-radius:12px;max-height:280px;object-fit:cover;width:100%"></div>
+              }
+            </div>
+          </div>
+
+          <div class="card form-card">
+            <h2>Decision</h2>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="button" (click)="approve()" [disabled]="actionLoading()">Approve farmer</button>
+            </div>
+            <form [formGroup]="rejectForm" (ngSubmit)="reject()" style="margin-top:1rem">
+              <div class="field"><label>Rejection remarks</label><textarea formControlName="remarks" placeholder="Reason for rejection (optional according to Swagger)"></textarea></div>
+              <button class="btn btn-danger" type="submit" [disabled]="actionLoading()">Reject farmer</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

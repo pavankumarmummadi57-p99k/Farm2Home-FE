@@ -1,0 +1,384 @@
+<section class="page">
+  <div class="container">
+
+    <div class="page-heading">
+      <div>
+        <h1>Farmer orders</h1>
+        <p>Review customer orders and accept or reject pending requests.</p>
+      </div>
+
+      <button
+        class="btn btn-secondary btn-sm"
+        type="button"
+        (click)="loadOrders()"
+        [disabled]="loading()">
+        Refresh
+      </button>
+    </div>
+
+    @if (loading()) {
+      <div class="loading">
+        <div>
+          <div class="spinner"></div>
+          Loading orders…
+        </div>
+      </div>
+    } @else if (!orders().length) {
+      <div class="empty-state">
+        <h3>No farmer orders yet</h3>
+        <p>Orders placed against your products will appear here.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Product</th>
+              <th>Customer</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (order of orders(); track id(order) || $index) {
+              <tr>
+                <td>#{{ id(order) }}</td>
+
+                <td>
+                  <button
+                    type="button"
+                    (click)="openOrderDetails(order)"
+                    title="View order and delivery address"
+                    aria-label="View order and delivery address"
+                    style="
+                      border:0;
+                      background:transparent;
+                      padding:0;
+                      margin:0;
+                      cursor:pointer;
+                      color:var(--primary);
+                      font:inherit;
+                      font-weight:800;
+                      text-align:left;
+                      text-decoration:underline;
+                      text-underline-offset:3px;
+                    ">
+                    {{ product(order) }}
+                  </button>
+                </td>
+
+                <td>
+                  <strong>{{ customer(order) }}</strong>
+                  @if (customerPhone(order)) {
+                    <div class="table-subtext">
+                      {{ customerPhone(order) }}
+                    </div>
+                  }
+                </td>
+
+                <td>{{ quantity(order) }}</td>
+
+                <td>
+                  {{ amount(order) ? ('₹' + (amount(order) | number:'1.0-2')) : '—' }}
+                </td>
+
+                <td>
+                  <span
+                    class="status"
+                    [ngClass]="statusClass(status(order))">
+                    {{ status(order) }}
+                  </span>
+                </td>
+
+                <td>
+                  @if (status(order) === 'PENDING') {
+                    <div class="table-actions">
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        (click)="accept(order)"
+                        [disabled]="updatingOrderId() === idNumber(order)">
+                        Accept
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        (click)="openReject(order)"
+                        [disabled]="updatingOrderId() === idNumber(order)">
+                        Reject
+                      </button>
+                    </div>
+                  } @else {
+                    <span class="table-subtext">Processed</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </div>
+</section>
+
+
+<!-- ===================================================== -->
+<!-- ORDER DETAILS / DELIVERY ADDRESS POPUP                 -->
+<!-- ===================================================== -->
+
+@if (selectedOrder(); as order) {
+  <div
+    class="modal-backdrop"
+    (click)="closeOrderDetails()"
+    style="
+      position:fixed;
+      inset:0;
+      z-index:2000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+      overflow:auto;
+      background:rgba(0,0,0,.48);
+    ">
+
+    <div
+      class="modal-card"
+      (click)="$event.stopPropagation()"
+      style="
+        width:min(700px, 100%);
+        max-height:calc(100vh - 2rem);
+        overflow-y:auto;
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:20px;
+        box-shadow:var(--shadow-lg);
+        padding:1.25rem;
+      ">
+
+      <!-- Top controls -->
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:1rem;
+          margin-bottom:1rem;
+        ">
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="closeOrderDetails()">
+          ← Back to orders
+        </button>
+
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Close order details"
+          title="Close"
+          (click)="closeOrderDetails()">
+          ×
+        </button>
+
+      </div>
+
+      <div class="modal-heading">
+        <div>
+          <h2>Order #{{ id(order) }}</h2>
+          <p>Customer and delivery information</p>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="small muted">Product</div>
+        <strong>{{ product(order) }}</strong>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:1rem">
+        <div>
+          <div class="small muted">Customer</div>
+          <strong>{{ customer(order) }}</strong>
+        </div>
+
+        <div>
+          <div class="small muted">Phone</div>
+          <strong>{{ customerPhone(order) || '—' }}</strong>
+        </div>
+
+        <div>
+          <div class="small muted">Quantity</div>
+          <strong>{{ quantity(order) }}</strong>
+        </div>
+
+        <div>
+          <div class="small muted">Total</div>
+          <strong>
+            {{ amount(order) ? ('₹' + (amount(order) | number:'1.0-2')) : '—' }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="margin-top:1.25rem">
+        <h3 style="margin-bottom:1rem">Delivery address</h3>
+
+        @if (addressLine1(order)) {
+          <div style="line-height:1.8">
+            <strong>{{ addressLine1(order) }}</strong>
+
+            @if (addressLine2(order)) {
+              <div>{{ addressLine2(order) }}</div>
+            }
+
+            @if (village(order) || mandal(order)) {
+              <div>
+                @if (village(order)) {
+                  {{ village(order) }}
+                }
+                @if (mandal(order)) {
+                  , {{ mandal(order) }}
+                }
+              </div>
+            }
+
+            @if (district(order) || state(order)) {
+              <div>
+                @if (district(order)) {
+                  {{ district(order) }}
+                }
+                @if (state(order)) {
+                  , {{ state(order) }}
+                }
+              </div>
+            }
+
+            @if (pincode(order)) {
+              <div>
+                Pincode: <strong>{{ pincode(order) }}</strong>
+              </div>
+            }
+
+            @if (landmark(order)) {
+              <div style="margin-top:1rem">
+                <div class="small muted">Landmark</div>
+                <strong>{{ landmark(order) }}</strong>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <h3>Address unavailable</h3>
+            <p>This order does not contain a saved delivery address.</p>
+          </div>
+        }
+      </div>
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:1rem;
+          flex-wrap:wrap;
+          margin-top:1.25rem;
+        ">
+
+        <span
+          class="status"
+          [ngClass]="statusClass(status(order))">
+          {{ status(order) }}
+        </span>
+
+        <button
+          class="btn btn-secondary"
+          type="button"
+          (click)="closeOrderDetails()">
+          Back to orders
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+}
+
+
+<!-- ===================================================== -->
+<!-- REJECT ORDER POPUP                                    -->
+<!-- ===================================================== -->
+
+@if (rejectingOrderId()) {
+  <div
+    class="modal-backdrop"
+    (click)="cancelReject()"
+    style="
+      position:fixed;
+      inset:0;
+      z-index:2000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+      overflow:auto;
+      background:rgba(0,0,0,.48);
+    ">
+
+    <div
+      class="modal-card"
+      (click)="$event.stopPropagation()"
+      style="
+        width:min(560px, 100%);
+        max-height:calc(100vh - 2rem);
+        overflow-y:auto;
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:20px;
+        box-shadow:var(--shadow-lg);
+        padding:1.25rem;
+      ">
+
+      <div class="modal-heading">
+        <div>
+          <h2>Reject order #{{ rejectingOrderId() }}</h2>
+          <p>Tell the customer why this order cannot be accepted.</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="rejectionReason">Reason</label>
+
+        <textarea
+          id="rejectionReason"
+          [(ngModel)]="rejectionReason"
+          maxlength="500"
+          placeholder="Example: Requested quantity is currently unavailable."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          class="btn btn-secondary"
+          type="button"
+          (click)="cancelReject()"
+          [disabled]="updatingOrderId() !== null">
+          Back
+        </button>
+
+        <button
+          class="btn btn-danger"
+          type="button"
+          (click)="confirmReject()"
+          [disabled]="updatingOrderId() !== null">
+          Reject order
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,292 @@
+<section class="page">
+
+  <div class="container">
+
+    <div class="page-heading">
+
+      <div>
+        <h1>My profile</h1>
+        <p>
+          Manage your Farm2Home delivery information.
+        </p>
+      </div>
+
+    </div>
+
+
+    @if (loading()) {
+
+      <div class="loading">
+        <div>
+          <div class="spinner"></div>
+          Loading profile…
+        </div>
+      </div>
+
+    } @else {
+
+      <div
+        class="card card-pad"
+        style="max-width:760px">
+
+        <div class="page-heading">
+
+          <div>
+            <h2>Delivery address</h2>
+            <p class="muted">
+              This address will be used for your future orders.
+            </p>
+          </div>
+
+
+          @if (addressExists() && !editing()) {
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              (click)="startEdit()">
+
+              Edit address
+
+            </button>
+
+          }
+
+        </div>
+
+
+        @if (!addressExists() && !editing()) {
+
+          <div class="empty-state">
+
+            <h3>
+              No delivery address added
+            </h3>
+
+            <p>
+              Add an address before placing your first order.
+            </p>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="startAdd()">
+
+              Add delivery address
+
+            </button>
+
+          </div>
+
+        }
+
+
+        @if (addressExists() && !editing() && address) {
+
+          <div
+            class="card"
+            style="padding:1.25rem">
+
+            <strong>
+              {{ address.addressLine1 }}
+            </strong>
+
+            @if (address.addressLine2) {
+              <div>{{ address.addressLine2 }}</div>
+            }
+
+            <div>
+              {{ address.village }},
+              {{ address.mandal }}
+            </div>
+
+            <div>
+              {{ address.district }},
+              {{ address.state }}
+              - {{ address.pincode }}
+            </div>
+
+            @if (address.landmark) {
+
+              <div style="margin-top:.75rem">
+
+                <span class="small muted">
+                  Landmark
+                </span>
+
+                <div>
+                  {{ address.landmark }}
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        }
+
+
+        @if (editing()) {
+
+          <div style="margin-top:1rem">
+
+
+            <div class="field">
+
+              <label>
+                House / Flat / Door No. *
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="form.addressLine1">
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Street / Area
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="form.addressLine2">
+
+            </div>
+
+
+            <div class="grid grid-2">
+
+              <div class="field">
+
+                <label>
+                  Village / Locality *
+                </label>
+
+                <input
+                  type="text"
+                  [(ngModel)]="form.village">
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Mandal / City *
+                </label>
+
+                <input
+                  type="text"
+                  [(ngModel)]="form.mandal">
+
+              </div>
+
+            </div>
+
+
+            <div class="grid grid-2">
+
+              <div class="field">
+
+                <label>
+                  District *
+                </label>
+
+                <input
+                  type="text"
+                  [(ngModel)]="form.district">
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  State *
+                </label>
+
+                <input
+                  type="text"
+                  [(ngModel)]="form.state">
+
+              </div>
+
+            </div>
+
+
+            <div class="grid grid-2">
+
+              <div class="field">
+
+                <label>
+                  Pincode *
+                </label>
+
+                <input
+                  type="text"
+                  maxlength="6"
+                  inputmode="numeric"
+                  [(ngModel)]="form.pincode">
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Landmark
+                </label>
+
+                <input
+                  type="text"
+                  [(ngModel)]="form.landmark">
+
+              </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+              <button
+                class="btn btn-secondary"
+                type="button"
+                (click)="cancelEdit()"
+                [disabled]="saving()">
+
+                Cancel
+
+              </button>
+
+
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="saveAddress()"
+                [disabled]="saving()">
+
+                {{
+                  saving()
+                    ? 'Saving…'
+                    : 'Save address'
+                }}
+
+              </button>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  </div>
+
+</section>

@@ -1,0 +1,385 @@
+<section class="page-narrow">
+
+  <div class="page-heading">
+
+    <div>
+      <h1>
+        {{ editing ? 'Edit product' : 'Add product' }}
+      </h1>
+
+      <p>
+        {{
+          editing
+            ? 'Update your product details and availability.'
+            : 'Create a new Farm2Home product. You can also create a missing category here.'
+        }}
+      </p>
+    </div>
+
+    <a
+      class="btn btn-secondary"
+      routerLink="/farmer/products">
+      Cancel
+    </a>
+
+  </div>
+
+
+  @if (pageLoading()) {
+
+    <div class="loading">
+      <div>
+        <div class="spinner"></div>
+        Loading product…
+      </div>
+    </div>
+
+  } @else {
+
+    <form
+      class="card form-card"
+      [formGroup]="form"
+      (ngSubmit)="submit()">
+
+      <div class="form-grid">
+
+        @if (!editing) {
+
+          <div class="field">
+
+            <label>Category</label>
+
+            <div
+              style="
+                display:grid;
+                grid-template-columns:minmax(0,1fr) auto;
+                gap:.65rem;
+                align-items:end;
+              ">
+
+              <select formControlName="categoryId">
+
+                <option [ngValue]="0">
+                  Select category
+                </option>
+
+                @for (
+                  category of categories();
+                  track categoryId(category)
+                ) {
+                  <option [ngValue]="categoryId(category)">
+                    {{ categoryName(category) }}
+                  </option>
+                }
+
+              </select>
+
+              <button
+                class="btn btn-secondary btn-sm"
+                type="button"
+                (click)="openCategoryModal()"
+                title="Create a new product category">
+                + Add category
+              </button>
+
+            </div>
+
+            <div class="small muted">
+              Select an existing category, or create a new one if it is missing.
+            </div>
+
+            <div class="field-error">
+              @if (
+                form.controls.categoryId.touched
+                && form.controls.categoryId.invalid
+              ) {
+                Select a category
+              }
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>Product name</label>
+
+            <input
+              formControlName="productName"
+              placeholder="e.g. Fresh Tomatoes">
+
+            <div class="field-error">
+              @if (
+                form.controls.productName.touched
+                && form.controls.productName.invalid
+              ) {
+                Product name is required
+              }
+            </div>
+
+          </div>
+
+        }
+
+
+        <div class="field full">
+
+          <label>Description</label>
+
+          <textarea
+            formControlName="description"
+            placeholder="Describe your product"></textarea>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Price</label>
+
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            formControlName="price">
+
+          <div class="field-error">
+            @if (
+              form.controls.price.touched
+              && form.controls.price.invalid
+            ) {
+              Price must be greater than 0
+            }
+          </div>
+
+        </div>
+
+
+        @if (!editing) {
+
+          <div class="field">
+
+            <label>Unit</label>
+
+            <select formControlName="unit">
+              <option value="">Select unit</option>
+              <option value="KG">Kilogram (KG)</option>
+              <option value="GRAM">Gram</option>
+              <option value="LITRE">Litre</option>
+              <option value="MILLILITRE">Millilitre</option>
+              <option value="PIECE">Piece</option>
+              <option value="PACK">Pack</option>
+            </select>
+
+            <div class="small muted">
+              Choose the unit used for this product's price and quantity.
+            </div>
+
+            <div class="field-error">
+              @if (
+                form.controls.unit.touched
+                && form.controls.unit.invalid
+              ) {
+                Select a unit
+              }
+            </div>
+
+          </div>
+
+        }
+
+
+        <div class="field">
+
+          <label>Available quantity</label>
+
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            formControlName="availableQuantity">
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Minimum order quantity</label>
+
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            formControlName="minimumOrderQuantity">
+
+        </div>
+
+
+        @if (editing) {
+
+          <div class="field full">
+
+            <label for="productAvailability">
+              Product availability
+            </label>
+
+            <select
+              id="productAvailability"
+              formControlName="isAvailable">
+
+              <option [ngValue]="true">Available</option>
+              <option [ngValue]="false">Unavailable</option>
+
+            </select>
+
+            <div class="small muted">
+              Customers will see this exact status.
+              Unavailable products stay visible, but ordering is disabled.
+            </div>
+
+          </div>
+
+        }
+
+
+        <div class="field full">
+
+          <label>Product images</label>
+
+          <input
+            class="file-input"
+            type="file"
+            accept="image/*"
+            multiple
+            (change)="filesChanged($event)">
+
+          <div class="small muted">
+            {{ selectedImages.length }} image(s) selected
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="loading()">
+
+          {{
+            loading()
+              ? 'Saving…'
+              : (editing ? 'Save changes' : 'Add product')
+          }}
+
+        </button>
+
+      </div>
+
+    </form>
+
+  }
+
+</section>
+
+
+@if (categoryModalOpen()) {
+
+  <div
+    class="modal-backdrop"
+    (click)="closeCategoryModal()">
+
+    <div
+      class="modal-card"
+      (click)="$event.stopPropagation()">
+
+      <div class="modal-heading">
+
+        <div>
+          <h2>Add product category</h2>
+          <p>
+            Create a missing category and continue posting your product.
+          </p>
+        </div>
+
+      </div>
+
+
+      <form
+        [formGroup]="categoryForm"
+        (ngSubmit)="saveCategory()">
+
+        <div class="field">
+
+          <label for="newCategoryName">
+            Category name
+          </label>
+
+          <input
+            id="newCategoryName"
+            formControlName="name"
+            maxlength="100"
+            placeholder="e.g. Fruits">
+
+          <div class="field-error">
+            @if (
+              categoryForm.controls.name.touched
+              && categoryForm.controls.name.invalid
+            ) {
+              Category name is required
+            }
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="newCategoryDescription">
+            Description
+          </label>
+
+          <textarea
+            id="newCategoryDescription"
+            formControlName="description"
+            maxlength="255"
+            placeholder="e.g. Fresh fruits"></textarea>
+
+        </div>
+
+
+        <div class="form-actions">
+
+          <button
+            class="btn btn-secondary"
+            type="button"
+            (click)="closeCategoryModal()"
+            [disabled]="savingCategory()">
+            Cancel
+          </button>
+
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="savingCategory()">
+
+            {{
+              savingCategory()
+                ? 'Saving…'
+                : 'Save category'
+            }}
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+}

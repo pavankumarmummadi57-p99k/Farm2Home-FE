@@ -1,0 +1,28 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div>
+        <h1>{{ farmerName() }} dashboard</h1>
+        <p>{{ farmName() }} · manage your Farm2Home activity.</p>
+      </div>
+      <a class="btn btn-primary" routerLink="/farmer/products/new">Add product</a>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><div><div class="spinner"></div>Loading dashboard…</div></div>
+    } @else {
+      <div class="grid grid-4">
+        <div class="card stat-card"><div class="stat-label">My products</div><div class="stat-value">{{ productCount() }}</div><div class="stat-hint">Current product records</div></div>
+        <div class="card stat-card"><div class="stat-label">Farmer orders</div><div class="stat-value">{{ orderCount() }}</div><div class="stat-hint">Orders returned by backend</div></div>
+        <div class="card stat-card"><div class="stat-label">Verification</div><div class="stat-value" style="font-size:1rem"><span class="status" [ngClass]="statusClass(verificationStatus())">{{ verificationStatus() }}</span></div><div class="stat-hint">Current farmer verification state</div></div>
+        <div class="card stat-card"><div class="stat-label">Account</div><div class="stat-value" style="font-size:1rem">FARMER</div><div class="stat-hint">Role-based access enabled</div></div>
+      </div>
+
+      <div class="grid grid-3" style="margin-top:1rem">
+        <a class="card card-pad" routerLink="/farmer/products"><h3>Manage products</h3><p class="muted">Add, edit, delete and upload product images.</p></a>
+        <a class="card card-pad" routerLink="/farmer/orders"><h3>View farmer orders</h3><p class="muted">See orders placed against your products.</p></a>
+        <a class="card card-pad" routerLink="/farmer/verification"><h3>Verification</h3><p class="muted">Upload ID and farm photos or check approval status.</p></a>
+      </div>
+    }
+  </div>
+</section>

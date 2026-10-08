@@ -1,0 +1,38 @@
+<section class="page">
+  <div class="container">
+    <div class="page-heading">
+      <div><h1>My products</h1><p>Products returned by <code>GET /api/products/my-products</code>.</p></div>
+      <a class="btn btn-primary" routerLink="/farmer/products/new">Add product</a>
+    </div>
+
+    @if (loading()) {
+      <div class="loading"><div><div class="spinner"></div>Loading products…</div></div>
+    } @else if (!products().length) {
+      <div class="empty-state"><h3>No products yet</h3><p>Add your first Farm2Home product.</p><a class="btn btn-primary" routerLink="/farmer/products/new">Add product</a></div>
+    } @else {
+      <div class="product-grid">
+        @for (product of products(); track productId(product) || $index) {
+          <article class="card product-card">
+            <img class="product-card-image" [src]="productImage(product)" [alt]="productName(product)">
+            <div class="product-card-body">
+              <div class="product-meta">
+                <span>{{ productAvailableQuantity(product) }} {{ productUnit(product) }} available</span>
+                <span class="status" [class.status-success]="productAvailable(product)" [class.status-danger]="!productAvailable(product)">
+                  {{ productAvailable(product) ? 'Available' : 'Unavailable' }}
+                </span>
+              </div>
+              <h3>{{ productName(product) }}</h3>
+              <div class="price">₹{{ productPrice(product) | number:'1.0-2' }}/{{ productUnit(product) }}</div>
+              <div class="product-actions">
+                <a class="btn btn-secondary btn-sm" [routerLink]="['/farmer/products', productId(product), 'edit']">Edit</a>
+                <button class="btn btn-danger btn-sm" type="button" (click)="remove(product)" [disabled]="deletingId() === productId(product)">
+                  {{ deletingId() === productId(product) ? 'Deleting…' : 'Delete' }}
+                </button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

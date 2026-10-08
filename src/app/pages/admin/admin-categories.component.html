@@ -1,0 +1,90 @@
+<!-- <section class="page">
+  <div class="container">
+    <div class="page-heading"><div><h1>Product categories</h1><p>View and create categories using your <code>/api/categories</code> endpoints.</p></div></div>
+
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card form-card">
+        <h2>Add category</h2>
+        <form [formGroup]="form" (ngSubmit)="add()">
+          <div class="field">
+            <label>Name</label>
+            <input formControlName="name" maxlength="100" placeholder="Category name">
+            <div class="field-error">@if (form.controls.name.touched && form.controls.name.invalid) { Category name is required }</div>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea formControlName="description" maxlength="255" placeholder="Short category description"></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit" [disabled]="saving()">{{ saving() ? 'Saving…' : 'Add category' }}</button>
+        </form>
+      </div>
+
+      <div class="card form-card">
+        <h2>Existing categories</h2>
+        @if (loading()) {
+          <div class="loading" style="min-height:140px"><div><div class="spinner"></div>Loading…</div></div>
+        } @else if (!categories().length) {
+          <div class="empty-state"><p>No categories returned by the backend.</p></div>
+        } @else {
+          <div class="grid">
+            @for (category of categories(); track id(category) || $index) {
+              <div class="callout">
+                <strong>{{ name(category) }}</strong>
+                <div class="small muted" style="margin-top:.25rem">{{ description(category) }}</div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+<section class="page">
+  <div class="container">
+
+    <div class="page-heading">
+      <div>
+        <h1>Product categories</h1>
+        <p>
+          Categories are created by farmers while posting products.
+          Admin can review the existing category list here.
+        </p>
+      </div>
+    </div>
+
+    <div class="card form-card" style="max-width:900px">
+      <h2>Existing categories</h2>
+
+      @if (loading()) {
+        <div class="loading" style="min-height:140px">
+          <div>
+            <div class="spinner"></div>
+            Loading…
+          </div>
+        </div>
+      } @else if (!categories().length) {
+        <div class="empty-state">
+          <h3>No categories yet</h3>
+          <p>
+            Categories will appear here after farmers create them
+            while posting products.
+          </p>
+        </div>
+      } @else {
+        <div class="grid">
+          @for (category of categories(); track id(category) || $index) {
+            <div class="callout">
+              <strong>{{ name(category) }}</strong>
+              <div class="small muted" style="margin-top:.25rem">
+                {{ description(category) }}
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</section>
